@@ -6,6 +6,7 @@ Uso:
     python run.py --host 0.0.0.0 --port 8080 --reload
 """
 import argparse
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -13,8 +14,8 @@ from pathlib import Path
 
 def main():
     parser = argparse.ArgumentParser(description="Moneyball 3.0 — Servidor")
-    parser.add_argument("--host", default="127.0.0.1")
-    parser.add_argument("--port", type=int, default=8000)
+    parser.add_argument("--host", default="0.0.0.0")
+    parser.add_argument("--port", type=int, default=int(os.environ.get("PORT", 8000)))
     parser.add_argument("--reload", action="store_true")
     args = parser.parse_args()
 

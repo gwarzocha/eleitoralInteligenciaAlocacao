@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: eleitoral-inteligencia-alocacao
+    runtime: python
+    buildCommand: pip install -r requirements.txt && python data/gerar_demo.py
+    startCommand: python run.py
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11"
+    healthCheckPath: /api/health
