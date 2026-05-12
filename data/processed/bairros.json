@@ -1,0 +1,154 @@
+{
+  "bairros": [
+    {
+      "codigo": "B01",
+      "nome": "Centro",
+      "total_eleitores": 18000
+    },
+    {
+      "codigo": "B02",
+      "nome": "Bela Vista",
+      "total_eleitores": 12000
+    },
+    {
+      "codigo": "B03",
+      "nome": "Jardim Paulista",
+      "total_eleitores": 14500
+    },
+    {
+      "codigo": "B04",
+      "nome": "Vila Mariana",
+      "total_eleitores": 16000
+    },
+    {
+      "codigo": "B05",
+      "nome": "Moema",
+      "total_eleitores": 11000
+    },
+    {
+      "codigo": "B06",
+      "nome": "Itaim Bibi",
+      "total_eleitores": 9000
+    },
+    {
+      "codigo": "B07",
+      "nome": "Pinheiros",
+      "total_eleitores": 13000
+    },
+    {
+      "codigo": "B08",
+      "nome": "Lapa",
+      "total_eleitores": 10500
+    },
+    {
+      "codigo": "B09",
+      "nome": "Santana",
+      "total_eleitores": 8000
+    },
+    {
+      "codigo": "B10",
+      "nome": "Tatuapé",
+      "total_eleitores": 11000
+    },
+    {
+      "codigo": "B11",
+      "nome": "Penha",
+      "total_eleitores": 9500
+    },
+    {
+      "codigo": "B12",
+      "nome": "São Miguel",
+      "total_eleitores": 7800
+    },
+    {
+      "codigo": "B13",
+      "nome": "Itaquera",
+      "total_eleitores": 12000
+    },
+    {
+      "codigo": "B14",
+      "nome": "Cidade Tiradentes",
+      "total_eleitores": 15000
+    },
+    {
+      "codigo": "B15",
+      "nome": "Sapopemba",
+      "total_eleitores": 13500
+    },
+    {
+      "codigo": "B16",
+      "nome": "Santo André Norte",
+      "total_eleitores": 10000
+    },
+    {
+      "codigo": "B17",
+      "nome": "Santo André Sul",
+      "total_eleitores": 8500
+    },
+    {
+      "codigo": "B18",
+      "nome": "São Bernardo Centro",
+      "total_eleitores": 9200
+    },
+    {
+      "codigo": "B19",
+      "nome": "São Caetano",
+      "total_eleitores": 7600
+    },
+    {
+      "codigo": "B20",
+      "nome": "Diadema",
+      "total_eleitores": 11800
+    },
+    {
+      "codigo": "B21",
+      "nome": "Mauá",
+      "total_eleitores": 9000
+    },
+    {
+      "codigo": "B22",
+      "nome": "Ribeirão Pires",
+      "total_eleitores": 6500
+    },
+    {
+      "codigo": "B23",
+      "nome": "Guarulhos Centro",
+      "total_eleitores": 14000
+    },
+    {
+      "codigo": "B24",
+      "nome": "Guarulhos Norte",
+      "total_eleitores": 10000
+    },
+    {
+      "codigo": "B25",
+      "nome": "Cumbica",
+      "total_eleitores": 8000
+    },
+    {
+      "codigo": "B26",
+      "nome": "Osasco Centro",
+      "total_eleitores": 13000
+    },
+    {
+      "codigo": "B27",
+      "nome": "Osasco Norte",
+      "total_eleitores": 9500
+    },
+    {
+      "codigo": "B28",
+      "nome": "Carapicuíba",
+      "total_eleitores": 11000
+    },
+    {
+      "codigo": "B29",
+      "nome": "Barueri",
+      "total_eleitores": 10500
+    },
+    {
+      "codigo": "B30",
+      "nome": "Cotia",
+      "total_eleitores": 7000
+    }
+  ]
+}

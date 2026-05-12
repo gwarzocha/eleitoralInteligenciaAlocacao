@@ -1,0 +1,336 @@
+{
+  "sigla_partido": "PXL",
+  "numero_partido": "13",
+  "codigo_municipio": "355030",
+  "ano_eleicao": 2022,
+  "cargo": "deputado_estadual",
+  "candidatos": [
+    {
+      "numero": "1301",
+      "nome": "Ana Carvalho",
+      "cargo": "deputado_estadual",
+      "sigla_partido": "PXL",
+      "codigo_municipio": "355030",
+      "ano_eleicao": 2022,
+      "total_votos_historicos": 11728
+    },
+    {
+      "numero": "1302",
+      "nome": "Bruno Fonseca",
+      "cargo": "deputado_estadual",
+      "sigla_partido": "PXL",
+      "codigo_municipio": "355030",
+      "ano_eleicao": 2022,
+      "total_votos_historicos": 17228
+    },
+    {
+      "numero": "1303",
+      "nome": "Carla Mendes",
+      "cargo": "deputado_estadual",
+      "sigla_partido": "PXL",
+      "codigo_municipio": "355030",
+      "ano_eleicao": 2022,
+      "total_votos_historicos": 12838
+    },
+    {
+      "numero": "1304",
+      "nome": "Daniel Rocha",
+      "cargo": "deputado_estadual",
+      "sigla_partido": "PXL",
+      "codigo_municipio": "355030",
+      "ano_eleicao": 2022,
+      "total_votos_historicos": 11135
+    },
+    {
+      "numero": "1305",
+      "nome": "Eduarda Lima",
+      "cargo": "deputado_estadual",
+      "sigla_partido": "PXL",
+      "codigo_municipio": "355030",
+      "ano_eleicao": 2022,
+      "total_votos_historicos": 9213
+    },
+    {
+      "numero": "1306",
+      "nome": "Felipe Souza",
+      "cargo": "deputado_estadual",
+      "sigla_partido": "PXL",
+      "codigo_municipio": "355030",
+      "ano_eleicao": 2022,
+      "total_votos_historicos": 15571
+    },
+    {
+      "numero": "1307",
+      "nome": "Gabriela Nunes",
+      "cargo": "deputado_estadual",
+      "sigla_partido": "PXL",
+      "codigo_municipio": "355030",
+      "ano_eleicao": 2022,
+      "total_votos_historicos": 9123
+    },
+    {
+      "numero": "1308",
+      "nome": "Henrique Costa",
+      "cargo": "deputado_estadual",
+      "sigla_partido": "PXL",
+      "codigo_municipio": "355030",
+      "ano_eleicao": 2022,
+      "total_votos_historicos": 21989
+    }
+  ],
+  "total_vagas_disputa": 70,
+  "fundo_total_reais": 2500000.0,
+  "meta_quociente_partidario": 3.0,
+  "territorios": [
+    {
+      "numero_candidato": "1301",
+      "codigo_bairro": "B01",
+      "votos_historicos": 4441
+    },
+    {
+      "numero_candidato": "1301",
+      "codigo_bairro": "B02",
+      "votos_historicos": 2976
+    },
+    {
+      "numero_candidato": "1301",
+      "codigo_bairro": "B03",
+      "votos_historicos": 1995
+    },
+    {
+      "numero_candidato": "1301",
+      "codigo_bairro": "B04",
+      "votos_historicos": 1337
+    },
+    {
+      "numero_candidato": "1301",
+      "codigo_bairro": "B05",
+      "votos_historicos": 896
+    },
+    {
+      "numero_candidato": "1301",
+      "codigo_bairro": "B06",
+      "votos_historicos": 83
+    },
+    {
+      "numero_candidato": "1302",
+      "codigo_bairro": "B02",
+      "votos_historicos": 111
+    },
+    {
+      "numero_candidato": "1302",
+      "codigo_bairro": "B03",
+      "votos_historicos": 6486
+    },
+    {
+      "numero_candidato": "1302",
+      "codigo_bairro": "B04",
+      "votos_historicos": 4347
+    },
+    {
+      "numero_candidato": "1302",
+      "codigo_bairro": "B05",
+      "votos_historicos": 2914
+    },
+    {
+      "numero_candidato": "1302",
+      "codigo_bairro": "B06",
+      "votos_historicos": 1953
+    },
+    {
+      "numero_candidato": "1302",
+      "codigo_bairro": "B07",
+      "votos_historicos": 1309
+    },
+    {
+      "numero_candidato": "1302",
+      "codigo_bairro": "B08",
+      "votos_historicos": 108
+    },
+    {
+      "numero_candidato": "1303",
+      "codigo_bairro": "B07",
+      "votos_historicos": 174
+    },
+    {
+      "numero_candidato": "1303",
+      "codigo_bairro": "B08",
+      "votos_historicos": 5193
+    },
+    {
+      "numero_candidato": "1303",
+      "codigo_bairro": "B09",
+      "votos_historicos": 3481
+    },
+    {
+      "numero_candidato": "1303",
+      "codigo_bairro": "B10",
+      "votos_historicos": 2333
+    },
+    {
+      "numero_candidato": "1303",
+      "codigo_bairro": "B11",
+      "votos_historicos": 1564
+    },
+    {
+      "numero_candidato": "1303",
+      "codigo_bairro": "B12",
+      "votos_historicos": 93
+    },
+    {
+      "numero_candidato": "1304",
+      "codigo_bairro": "B11",
+      "votos_historicos": 155
+    },
+    {
+      "numero_candidato": "1304",
+      "codigo_bairro": "B12",
+      "votos_historicos": 4481
+    },
+    {
+      "numero_candidato": "1304",
+      "codigo_bairro": "B13",
+      "votos_historicos": 3003
+    },
+    {
+      "numero_candidato": "1304",
+      "codigo_bairro": "B14",
+      "votos_historicos": 2013
+    },
+    {
+      "numero_candidato": "1304",
+      "codigo_bairro": "B15",
+      "votos_historicos": 1349
+    },
+    {
+      "numero_candidato": "1304",
+      "codigo_bairro": "B16",
+      "votos_historicos": 134
+    },
+    {
+      "numero_candidato": "1305",
+      "codigo_bairro": "B15",
+      "votos_historicos": 83
+    },
+    {
+      "numero_candidato": "1305",
+      "codigo_bairro": "B16",
+      "votos_historicos": 3734
+    },
+    {
+      "numero_candidato": "1305",
+      "codigo_bairro": "B17",
+      "votos_historicos": 2503
+    },
+    {
+      "numero_candidato": "1305",
+      "codigo_bairro": "B18",
+      "votos_historicos": 1678
+    },
+    {
+      "numero_candidato": "1305",
+      "codigo_bairro": "B19",
+      "votos_historicos": 1124
+    },
+    {
+      "numero_candidato": "1305",
+      "codigo_bairro": "B20",
+      "votos_historicos": 91
+    },
+    {
+      "numero_candidato": "1306",
+      "codigo_bairro": "B01",
+      "votos_historicos": 6263
+    },
+    {
+      "numero_candidato": "1306",
+      "codigo_bairro": "B02",
+      "votos_historicos": 4198
+    },
+    {
+      "numero_candidato": "1306",
+      "codigo_bairro": "B03",
+      "votos_historicos": 109
+    },
+    {
+      "numero_candidato": "1306",
+      "codigo_bairro": "B19",
+      "votos_historicos": 144
+    },
+    {
+      "numero_candidato": "1306",
+      "codigo_bairro": "B20",
+      "votos_historicos": 2814
+    },
+    {
+      "numero_candidato": "1306",
+      "codigo_bairro": "B21",
+      "votos_historicos": 1886
+    },
+    {
+      "numero_candidato": "1306",
+      "codigo_bairro": "B22",
+      "votos_historicos": 157
+    },
+    {
+      "numero_candidato": "1307",
+      "codigo_bairro": "B21",
+      "votos_historicos": 151
+    },
+    {
+      "numero_candidato": "1307",
+      "codigo_bairro": "B22",
+      "votos_historicos": 3663
+    },
+    {
+      "numero_candidato": "1307",
+      "codigo_bairro": "B23",
+      "votos_historicos": 2455
+    },
+    {
+      "numero_candidato": "1307",
+      "codigo_bairro": "B24",
+      "votos_historicos": 1646
+    },
+    {
+      "numero_candidato": "1307",
+      "codigo_bairro": "B25",
+      "votos_historicos": 1103
+    },
+    {
+      "numero_candidato": "1307",
+      "codigo_bairro": "B26",
+      "votos_historicos": 105
+    },
+    {
+      "numero_candidato": "1308",
+      "codigo_bairro": "B25",
+      "votos_historicos": 108
+    },
+    {
+      "numero_candidato": "1308",
+      "codigo_bairro": "B26",
+      "votos_historicos": 8982
+    },
+    {
+      "numero_candidato": "1308",
+      "codigo_bairro": "B27",
+      "votos_historicos": 6021
+    },
+    {
+      "numero_candidato": "1308",
+      "codigo_bairro": "B28",
+      "votos_historicos": 4036
+    },
+    {
+      "numero_candidato": "1308",
+      "codigo_bairro": "B29",
+      "votos_historicos": 2705
+    },
+    {
+      "numero_candidato": "1308",
+      "codigo_bairro": "B30",
+      "votos_historicos": 137
+    }
+  ]
+}

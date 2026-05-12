@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Geopolítica de Precisão Eleitoral — Moneyball 3.0</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --border: #30363d;
+      --text: #e6edf3;
+      --text-muted: #8b949e;
+      --accent: #1f6feb;
+      --green: #3fb950;
+      --yellow: #d29922;
+      --orange: #f0883e;
+      --red: #f85149;
+      --purple: #a371f7;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 14px; }
+
+    header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 12px 20px; display: flex; align-items: center; gap: 12px; }
+    header h1 { font-size: 16px; font-weight: 600; }
+    header span { color: var(--text-muted); font-size: 12px; }
+    .badge { background: var(--accent); color: #fff; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+
+    .layout { display: grid; grid-template-columns: 340px 1fr; height: calc(100vh - 49px); }
+    .sidebar { background: var(--surface); border-right: 1px solid var(--border); overflow-y: auto; }
+    .main { display: flex; flex-direction: column; }
+
+    .panel { border-bottom: 1px solid var(--border); padding: 14px; }
+    .panel-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--text-muted); margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; }
+    .panel-title button { background: var(--accent); color: #fff; border: none; padding: 3px 10px; border-radius: 4px; font-size: 11px; cursor: pointer; }
+    .panel-title button:hover { opacity: .85; }
+
+    /* KPI cards */
+    .kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .kpi { background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 10px; }
+    .kpi .val { font-size: 22px; font-weight: 700; }
+    .kpi .lbl { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+    .kpi.green .val { color: var(--green); }
+    .kpi.yellow .val { color: var(--yellow); }
+    .kpi.red .val { color: var(--red); }
+    .kpi.blue .val { color: var(--accent); }
+
+    /* Alertas */
+    .alerta { border-radius: 6px; padding: 10px; margin-bottom: 8px; border-left: 3px solid; }
+    .alerta.critico { border-color: var(--red); background: rgba(248,81,73,.08); }
+    .alerta.alto    { border-color: var(--orange); background: rgba(240,136,62,.08); }
+    .alerta.medio   { border-color: var(--yellow); background: rgba(210,153,34,.08); }
+    .alerta.baixo   { border-color: var(--text-muted); background: rgba(139,148,158,.08); }
+    .alerta .nivel  { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; }
+    .alerta .desc   { font-size: 12px; color: var(--text-muted); margin-top: 4px; line-height: 1.4; }
+    .nivel-tag.critico { color: var(--red); }
+    .nivel-tag.alto    { color: var(--orange); }
+    .nivel-tag.medio   { color: var(--yellow); }
+    .nivel-tag.baixo   { color: var(--text-muted); }
+
+    /* Lista de bairros */
+    .bairro-item { display: flex; align-items: center; gap: 8px; padding: 7px 0; border-bottom: 1px solid var(--border); cursor: pointer; }
+    .bairro-item:hover { background: rgba(255,255,255,.03); }
+    .cat-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .cat-oportunidade { background: var(--green); }
+    .cat-conflito { background: var(--red); }
+    .cat-coberto { background: var(--accent); }
+    .cat-adverso { background: var(--text-muted); }
+    .cat-heranca_perdida { background: var(--purple); }
+    .cat-indefinido { background: var(--border); }
+    .bairro-nome { flex: 1; font-size: 12px; }
+    .bairro-meta { font-size: 11px; color: var(--text-muted); }
+
+    /* Alocações */
+    .aloc-row { padding: 8px 0; border-bottom: 1px solid var(--border); }
+    .aloc-header { display: flex; justify-content: space-between; align-items: center; }
+    .aloc-nome { font-size: 12px; font-weight: 500; }
+    .aloc-pct { font-size: 12px; font-weight: 700; color: var(--green); }
+    .bar-track { background: var(--border); border-radius: 4px; height: 4px; margin-top: 5px; }
+    .bar-fill { height: 4px; border-radius: 4px; background: var(--accent); transition: width .6s ease; }
+    .aloc-just { font-size: 11px; color: var(--text-muted); margin-top: 3px; line-height: 1.4; }
+
+    /* Map */
+    #map { flex: 1; }
+
+    /* Tabs */
+    .tabs { display: flex; border-bottom: 1px solid var(--border); background: var(--surface); }
+    .tab { padding: 10px 16px; font-size: 12px; cursor: pointer; color: var(--text-muted); border-bottom: 2px solid transparent; }
+    .tab.active { color: var(--text); border-bottom-color: var(--accent); }
+    .tab:hover { color: var(--text); }
+
+    /* Simulador */
+    .sim-panel { padding: 16px; overflow-y: auto; flex: 1; }
+    .sim-panel h3 { font-size: 13px; margin-bottom: 12px; color: var(--text-muted); }
+    .sim-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+    .sim-card { background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 10px; }
+    .sim-card h4 { font-size: 11px; color: var(--text-muted); margin-bottom: 8px; }
+    .sim-card .big { font-size: 28px; font-weight: 700; }
+    .sim-card .big.green { color: var(--green); }
+    .sim-card .big.yellow { color: var(--yellow); }
+    .sim-card .sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+    select, input { background: var(--bg); border: 1px solid var(--border); color: var(--text); padding: 6px 10px; border-radius: 4px; font-size: 12px; width: 100%; margin-bottom: 8px; }
+    .btn-primary { background: var(--accent); color: #fff; border: none; padding: 8px 16px; border-radius: 4px; font-size: 13px; cursor: pointer; width: 100%; margin-top: 4px; }
+    .btn-primary:hover { opacity: .85; }
+
+    /* Loading */
+    .loading { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 20px; color: var(--text-muted); }
+    .spinner { width: 16px; height: 16px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin .7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .hidden { display: none !important; }
+    .tag { display: inline-block; padding: 1px 6px; border-radius: 3px; font-size: 10px; font-weight: 600; margin-left: 4px; }
+    .tag.oportunidade { background: rgba(63,185,80,.2); color: var(--green); }
+    .tag.conflito { background: rgba(248,81,73,.2); color: var(--red); }
+    .tag.coberto { background: rgba(31,111,235,.2); color: var(--accent); }
+    .tag.adverso { background: rgba(139,148,158,.2); color: var(--text-muted); }
+    .tag.heranca_perdida { background: rgba(163,113,247,.2); color: var(--purple); }
+  </style>
+</head>
+<body>
+<header>
+  <div style="font-size:20px">🗺️</div>
+  <h1>Geopolítica de Precisão Eleitoral</h1>
+  <span class="badge">Moneyball 3.0</span>
+  <span style="margin-left:auto;color:var(--text-muted);font-size:12px" id="partido-label"></span>
+</header>
+
+<div class="layout">
+  <!-- ── SIDEBAR ── -->
+  <div class="sidebar">
+    <!-- KPIs -->
+    <div class="panel">
+      <div class="panel-title">Visão Geral da Chapa</div>
+      <div class="kpi-grid" id="kpi-grid">
+        <div class="loading"><div class="spinner"></div> carregando...</div>
+      </div>
+    </div>
+
+    <!-- Alertas de Conflito -->
+    <div class="panel">
+      <div class="panel-title">
+        <span>⚠ Alertas de Conflito</span>
+        <span id="alertas-count" style="color:var(--red);font-size:12px"></span>
+      </div>
+      <div id="alertas-list">
+        <div class="loading"><div class="spinner"></div></div>
+      </div>
+    </div>
+
+    <!-- Bairros -->
+    <div class="panel">
+      <div class="panel-title">Bairros por Categoria</div>
+      <div id="bairros-list">
+        <div class="loading"><div class="spinner"></div></div>
+      </div>
+    </div>
+
+    <!-- Alocação -->
+    <div class="panel">
+      <div class="panel-title">Distribuição do Fundo Eleitoral</div>
+      <div id="aloc-list">
+        <div class="loading"><div class="spinner"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── MAIN ── -->
+  <div class="main">
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('map')">Mapa de Oportunidade vs. Conflito</div>
+      <div class="tab" onclick="switchTab('sim')">Simulador de Acordo Territorial</div>
+    </div>
+
+    <!-- MAP TAB -->
+    <div id="tab-map" style="flex:1;display:flex;flex-direction:column;">
+      <div id="map"></div>
+    </div>
+
+    <!-- SIMULATOR TAB -->
+    <div id="tab-sim" class="hidden" style="flex:1;overflow-y:auto;">
+      <div class="sim-panel">
+        <h3>Simule o que acontece quando cada candidato foca em territórios específicos. O sistema projeta o ganho líquido de votos e o novo Quociente Partidário.</h3>
+
+        <div id="sim-form"></div>
+        <button class="btn-primary" onclick="executarSimulacao()">▶ Executar Simulação</button>
+
+        <div id="sim-result" class="hidden" style="margin-top:20px;">
+          <div class="sim-grid">
+            <div class="sim-card">
+              <h4>QP Projetado</h4>
+              <div class="big green" id="sim-qp">—</div>
+              <div class="sub" id="sim-vagas">— vagas estimadas</div>
+            </div>
+            <div class="sim-card">
+              <h4>Ganho vs. Baseline</h4>
+              <div class="big yellow" id="sim-ganho">—</div>
+              <div class="sub">votos extras com acordo</div>
+            </div>
+          </div>
+          <div id="sim-detalhe"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+// ─── Estado global ────────────────────────────────────────────────────────────
+let ANALISE = null;
+let map = null;
+let markers = [];
+
+const CAT_COLOR = {
+  oportunidade:    '#3fb950',
+  conflito:        '#f85149',
+  coberto:         '#1f6feb',
+  adverso:         '#8b949e',
+  herança_perdida: '#a371f7',
+  heranca_perdida: '#a371f7',
+  indefinido:      '#30363d',
+};
+
+// ─── Bootstrap ───────────────────────────────────────────────────────────────
+(async () => {
+  initMap();
+
+  // Carrega dados demo
+  const resp = await fetch('/api/demo/analise-completa');
+  ANALISE = await resp.json();
+
+  renderKPIs(ANALISE);
+  renderAlertas(ANALISE.conflitos);
+  renderBairros(ANALISE.mapa);
+  renderAlocacao(ANALISE.otimizacao);
+  renderMapMarkers(ANALISE.mapa);
+  buildSimForm(ANALISE);
+
+  document.getElementById('partido-label').textContent =
+    `Chapa ${ANALISE.conflitos.resumo ? '' : ''}`;
+})();
+
+// ─── Mapa ─────────────────────────────────────────────────────────────────────
+function initMap() {
+  map = L.map('map', { center: [-23.55, -46.63], zoom: 10 });
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    attribution: '© OpenStreetMap contributors © CARTO',
+    maxZoom: 19,
+  }).addTo(map);
+}
+
+function renderMapMarkers(mapa) {
+  markers.forEach(m => map.removeLayer(m));
+  markers = [];
+
+  mapa.bairros.forEach(b => {
+    // Usar coordenadas dos dados de bairros carregados
+    const coord = BAIRRO_COORDS[b.codigo];
+    if (!coord) return;
+
+    const color = CAT_COLOR[b.categoria] || '#30363d';
+    const radius = 6 + Math.sqrt(b.potencial_votos_extras / 100);
+    const circle = L.circleMarker([coord.lat, coord.lon], {
+      radius: Math.min(radius, 20),
+      fillColor: color,
+      color: '#0d1117',
+      weight: 1.5,
+      opacity: 1,
+      fillOpacity: 0.8,
+    }).addTo(map);
+
+    const catLabel = {
+      oportunidade: '🟢 OPORTUNIDADE',
+      conflito: '🔴 ZONA DE GUERRA',
+      coberto: '🔵 COBERTO',
+      adverso: '⚫ ADVERSO',
+      heranca_perdida: '🟣 HERANÇA PERDIDA',
+      heranca_perdida: '🟣 HERANÇA PERDIDA',
+    }[b.categoria] || b.categoria;
+
+    circle.bindPopup(`
+      <div style="font-family:monospace;font-size:12px;min-width:200px">
+        <b style="font-size:13px">${b.nome}</b><br>
+        <span style="color:${color}">${catLabel}</span><br><br>
+        <b>Força de Legenda:</b> ${b.forca_legenda_pct.toFixed(1)}%<br>
+        <b>Candidatos:</b> ${b.candidatos_presentes.length > 0 ? b.candidatos_presentes.join(', ') : '— nenhum —'}<br>
+        <b>Conflitos:</b> ${b.n_conflito} par(es)<br>
+        <b>Potencial:</b> +${b.potencial_votos_extras.toLocaleString('pt-BR')} votos<br>
+        <b>Elasticidade:</b> ${b.elasticidade.toFixed(3)}<br>
+        <b>Índice Vácuo:</b> ${(b.indice_vacuo * 100).toFixed(1)}%
+      </div>
+    `);
+    markers.push(circle);
+  });
+}
+
+// ─── Legenda dinâmica ────────────────────────────────────────────────────────
+const BAIRRO_COORDS = {};
+
+(async () => {
+  const r = await fetch('/api/demo/bairros');
+  const d = await r.json();
+  d.bairros.forEach(b => { BAIRRO_COORDS[b.codigo] = { lat: b.lat, lon: b.lon }; });
+})();
+
+// ─── KPIs ─────────────────────────────────────────────────────────────────────
+function renderKPIs(analise) {
+  const otim = analise.otimizacao;
+  const mapa = analise.mapa;
+  const conflitos = analise.conflitos;
+  const por_cat = mapa.por_categoria || {};
+
+  document.getElementById('kpi-grid').innerHTML = `
+    <div class="kpi blue">
+      <div class="val">${otim.qp_projetado.toFixed(2)}</div>
+      <div class="lbl">QP Projetado</div>
+    </div>
+    <div class="kpi green">
+      <div class="val">${otim.vagas_projetadas}</div>
+      <div class="lbl">Vagas Estimadas</div>
+    </div>
+    <div class="kpi yellow">
+      <div class="val">${por_cat.oportunidade || 0}</div>
+      <div class="lbl">Áreas Oportunidade</div>
+    </div>
+    <div class="kpi red">
+      <div class="val">${conflitos.resumo.criticos || 0}</div>
+      <div class="lbl">Conflitos Críticos</div>
+    </div>
+    <div class="kpi green">
+      <div class="val">${por_cat.coberto || 0}</div>
+      <div class="lbl">Bairros Cobertos</div>
+    </div>
+    <div class="kpi yellow">
+      <div class="val">${conflitos.resumo.total_votos_risco?.toLocaleString('pt-BR') || 0}</div>
+      <div class="lbl">Votos em Risco</div>
+    </div>
+  `;
+}
+
+// ─── Alertas ──────────────────────────────────────────────────────────────────
+function renderAlertas(conflitos) {
+  const alertas = conflitos.alertas || [];
+  document.getElementById('alertas-count').textContent = `${alertas.length} par(es)`;
+
+  if (alertas.length === 0) {
+    document.getElementById('alertas-list').innerHTML = '<div style="color:var(--text-muted);padding:8px;font-size:12px">Nenhum conflito detectado.</div>';
+    return;
+  }
+
+  document.getElementById('alertas-list').innerHTML = alertas.map(a => `
+    <div class="alerta ${a.nivel_alerta.replace('é','e').replace('í','i')}">
+      <div class="nivel nivel-tag ${a.nivel_alerta.replace('é','e').replace('í','i')}">
+        ${a.nivel_alerta.toUpperCase()} — ${a.nome_a} × ${a.nome_b}
+      </div>
+      <div class="desc">
+        Sobreposição: <b>${(a.sobreposicao_ponderada * 100).toFixed(0)}%</b> |
+        ${a.bairros_conflito.length} bairro(s) |
+        ~<b>${a.perda_estimada_votos.toLocaleString('pt-BR')}</b> votos em risco
+      </div>
+    </div>
+  `).join('');
+}
+
+// ─── Bairros ──────────────────────────────────────────────────────────────────
+function renderBairros(mapa) {
+  const bairros = mapa.bairros || [];
+  const html = bairros.map(b => {
+    const color = CAT_COLOR[b.categoria] || '#30363d';
+    const tag = `<span class="tag ${b.categoria.replace('ê','e').replace('ã','a')}">${b.categoria}</span>`;
+    return `
+      <div class="bairro-item" onclick="focusBairro('${b.codigo}')">
+        <div class="cat-dot" style="background:${color}"></div>
+        <div class="bairro-nome">${b.nome}</div>
+        <div class="bairro-meta">${b.forca_legenda_pct.toFixed(0)}%</div>
+        ${tag}
+      </div>
+    `;
+  }).join('');
+  document.getElementById('bairros-list').innerHTML = html || '<div style="color:var(--text-muted);padding:8px">Sem dados.</div>';
+}
+
+function focusBairro(cod) {
+  const coord = BAIRRO_COORDS[cod];
+  if (coord && map) {
+    map.setView([coord.lat, coord.lon], 13);
+    switchTab('map');
+  }
+}
+
+// ─── Alocação ─────────────────────────────────────────────────────────────────
+function renderAlocacao(otim) {
+  const alocs = otim.alocacoes || [];
+  const maxPct = Math.max(...alocs.map(a => a.percentual_otimizado));
+
+  document.getElementById('aloc-list').innerHTML = alocs.map(a => `
+    <div class="aloc-row">
+      <div class="aloc-header">
+        <div class="aloc-nome">${a.nome_candidato} <span style="color:var(--text-muted)">#${a.numero_candidato}</span></div>
+        <div class="aloc-pct">${a.percentual_otimizado.toFixed(1)}%</div>
+      </div>
+      <div class="bar-track">
+        <div class="bar-fill" style="width:${(a.percentual_otimizado / maxPct * 100).toFixed(0)}%"></div>
+      </div>
+      ${a.justificativa.length ? `<div class="aloc-just">${a.justificativa[0]}</div>` : ''}
+      <div style="font-size:11px;color:var(--text-muted);margin-top:2px">
+        ~${a.votos_projetados.toLocaleString('pt-BR')} votos projetados
+      </div>
+    </div>
+  `).join('');
+}
+
+// ─── Simulador ────────────────────────────────────────────────────────────────
+function buildSimForm(analise) {
+  const candidatos = analise.otimizacao.alocacoes || [];
+  const bairros = (analise.mapa.bairros || []).map(b => b.nome).slice(0, 30);
+
+  const formHtml = candidatos.map(c => `
+    <div style="margin-bottom:12px;padding:10px;background:var(--bg);border:1px solid var(--border);border-radius:6px;">
+      <div style="font-size:12px;font-weight:600;margin-bottom:6px;">${c.nome_candidato}</div>
+      <select id="sim-${c.numero_candidato}" multiple style="height:90px;font-size:11px;">
+        ${(analise.mapa.bairros || [])
+          .filter(b => b.candidatos_presentes.includes(c.numero_candidato))
+          .map(b => `<option value="${b.codigo}" selected>${b.nome}</option>`)
+          .join('')}
+        ${(analise.mapa.bairros || [])
+          .filter(b => !b.candidatos_presentes.includes(c.numero_candidato))
+          .map(b => `<option value="${b.codigo}">${b.nome} ✦ novo</option>`)
+          .join('')}
+      </select>
+      <div style="font-size:10px;color:var(--text-muted);margin-top:4px">Ctrl+clique para selecionar múltiplos</div>
+    </div>
+  `).join('');
+
+  document.getElementById('sim-form').innerHTML = formHtml;
+}
+
+async function executarSimulacao() {
+  if (!ANALISE) return;
+  const candidatos = ANALISE.otimizacao.alocacoes || [];
+
+  const territoriosFixados = {};
+  candidatos.forEach(c => {
+    const sel = document.getElementById(`sim-${c.numero_candidato}`);
+    if (!sel) return;
+    territoriosFixados[c.numero_candidato] = Array.from(sel.selectedOptions).map(o => o.value);
+  });
+
+  const payload = {
+    chapa: ANALISE._chapa_raw,
+    territorios_fixados: territoriosFixados,
+    nome_cenario: 'Simulação Manual',
+    total_votos_validos: 330000,
+    total_vagas: 70,
+  };
+
+  const resp = await fetch('/api/analise/simular-acordo', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+
+  const result = await resp.json();
+  renderSimResult(result);
+}
+
+function renderSimResult(r) {
+  document.getElementById('sim-result').classList.remove('hidden');
+  document.getElementById('sim-qp').textContent = r.qp_projetado.toFixed(3);
+  document.getElementById('sim-vagas').textContent = `${r.vagas_projetadas} vagas estimadas`;
+  const ganho = r.ganho_vs_baseline;
+  document.getElementById('sim-ganho').textContent =
+    (ganho >= 0 ? '+' : '') + ganho.toLocaleString('pt-BR');
+  document.getElementById('sim-ganho').className =
+    `big ${ganho >= 0 ? 'green' : 'red'}`;
+
+  const candidatos = ANALISE.otimizacao.alocacoes || [];
+  const rows = candidatos.map(c => {
+    const v = r.votos_projetados_por_candidato[c.numero_candidato] || 0;
+    return `<tr>
+      <td style="padding:5px 8px">${c.nome_candidato}</td>
+      <td style="padding:5px 8px;text-align:right">${v.toLocaleString('pt-BR')}</td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('sim-detalhe').innerHTML = `
+    <table style="width:100%;border-collapse:collapse;font-size:12px;margin-top:12px;">
+      <thead>
+        <tr style="color:var(--text-muted);border-bottom:1px solid var(--border)">
+          <th style="text-align:left;padding:5px 8px">Candidato</th>
+          <th style="text-align:right;padding:5px 8px">Votos Projetados</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+      <tfoot>
+        <tr style="border-top:1px solid var(--border);font-weight:600">
+          <td style="padding:5px 8px">TOTAL CHAPA</td>
+          <td style="padding:5px 8px;text-align:right">${r.total_votos_chapa.toLocaleString('pt-BR')}</td>
+        </tr>
+      </tfoot>
+    </table>
+  `;
+}
+
+// ─── Tabs ──────────────────────────────────────────────────────────────────────
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-map').classList.add('hidden');
+  document.getElementById('tab-sim').classList.add('hidden');
+
+  if (tab === 'map') {
+    document.getElementById('tab-map').classList.remove('hidden');
+    document.querySelectorAll('.tab')[0].classList.add('active');
+    if (map) map.invalidateSize();
+  } else {
+    document.getElementById('tab-sim').classList.remove('hidden');
+    document.querySelectorAll('.tab')[1].classList.add('active');
+  }
+}
+</script>
+</body>
+</html>
