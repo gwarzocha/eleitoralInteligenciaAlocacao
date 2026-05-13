@@ -17,7 +17,7 @@ from config import (
     ALIAS_2022,
     MIN_VOTOS_BAIRRO,
     CRITICO_THRESHOLD,
-    ALERTA_THRESHOLD,
+    ALERTA_THRESHOLD,  # used in CASE expressions embedded in SQL f-string
 )
 from queries.conexao import get_connection
 
@@ -78,7 +78,7 @@ def _build_query_2024(
         partido_filter = "AND r.SG_PARTIDO = ?"
         params_candidatos.append(sg_partido)
 
-    params_tail: list = [top_n, MIN_VOTOS_BAIRRO, ALERTA_THRESHOLD]
+    params_tail: list = [top_n, MIN_VOTOS_BAIRRO]
 
     sql = f"""
 WITH
@@ -221,18 +221,12 @@ resultado_final AS (
 SELECT *
 FROM resultado_final
 WHERE "Status Conflito" IN ('ALERTA', 'CRÍTICO')
-  AND n_candidatos_partido_bairro >= ?
 ORDER BY
     "Município",
     "Bairro",
     "Partido",
     "Posição Bairro"
 """
-    # params order:
-    # votos_secao:  uf, cd_cargo [, cd_municipio]
-    # candidatos:   uf, cd_cargo [, cd_municipio] [, sg_partido]
-    # top_n_bairro: top_n, MIN_VOTOS_BAIRRO
-    # WHERE final:  ALERTA_THRESHOLD
     full_params = params_secao + params_candidatos + params_tail
     return sql, full_params
 
@@ -270,7 +264,7 @@ def _build_query_2022(
         partido_filter = "AND r.SG_PARTIDO = ?"
         params_candidatos.append(sg_partido)
 
-    params_tail: list = [top_n, MIN_VOTOS_BAIRRO, ALERTA_THRESHOLD]
+    params_tail: list = [top_n, MIN_VOTOS_BAIRRO]
 
     sql = f"""
 WITH
@@ -434,18 +428,12 @@ resultado_final AS (
 SELECT *
 FROM resultado_final
 WHERE "Status Conflito" IN ('ALERTA', 'CRÍTICO')
-  AND GREATEST("Candidatos Partido/Bairro", "Candidatos Fed./Bairro") >= ?
 ORDER BY
     "Município",
     "Bairro",
     "Partido",
     "Posição Bairro"
 """
-    # params order:
-    # votos_secao:  uf, cd_cargo [, cd_municipio]
-    # candidatos:   uf, cd_cargo [, cd_municipio] [, sg_partido]
-    # top_n_bairro: top_n, MIN_VOTOS_BAIRRO
-    # WHERE final:  ALERTA_THRESHOLD
     full_params = params_secao + params_candidatos + params_tail
     return sql, full_params
 
