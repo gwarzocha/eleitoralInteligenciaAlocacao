@@ -80,3 +80,12 @@ STATUS_COLORS: dict[str, str] = {
 # Candidatos no mesmo partido/federação que configuram CRÍTICO (>= 3) ou ALERTA (== 2)
 CRITICO_THRESHOLD: int = 3   # >= 3 candidatos → CRÍTICO
 ALERTA_THRESHOLD: int = 2    # == 2 candidatos → ALERTA
+
+# ---------------------------------------------------------------------------
+# DS_CARGO — strings usadas nas tabelas de seção do TSE
+# (votacao_secao_votacao_secao_AAAA_UF usa DS_CARGO, não CD_CARGO)
+# ---------------------------------------------------------------------------
+DS_CARGOS_2024: dict[int, str] = {
+    13: "Vereador",
+    11: "Prefeito",
+}

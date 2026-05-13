@@ -84,24 +84,22 @@ def render_filtros(con) -> dict:
         # Município (opcional — só carrega se UF estiver selecionada)
         # ------------------------------------------------------------------
         cd_municipio: int | None = None
+        nm_municipio: str | None = None
 
         if uf:
             municipios = listar_municipios(uf, ano)
-            mun_options_labels = [("", "Todos os Municípios")] + [
-                (str(cd), nm) for cd, nm in municipios
-            ]
-            mun_values = [x[0] for x in mun_options_labels]
-            mun_labels = [x[1] for x in mun_options_labels]
+            # lista de (cd_int, nm_str); índice 0 = "Todos"
+            mun_options = [(None, "Todos os Municípios")] + list(municipios)
 
             mun_idx = st.selectbox(
                 label="Município",
-                options=range(len(mun_values)),
-                format_func=lambda i: mun_labels[i],
+                options=range(len(mun_options)),
+                format_func=lambda i: mun_options[i][1],
                 index=0,
                 key="sb_municipio",
             )
-            mun_val = mun_values[mun_idx]
-            cd_municipio = int(mun_val) if mun_val != "" else None
+            cd_municipio = mun_options[mun_idx][0]       # int ou None
+            nm_municipio = mun_options[mun_idx][1] if cd_municipio is not None else None
         else:
             st.selectbox(
                 label="Município",
@@ -168,5 +166,6 @@ def render_filtros(con) -> dict:
         "nm_cargo": nm_cargo,
         "sg_partido": sg_partido,
         "cd_municipio": cd_municipio,
+        "nm_municipio": nm_municipio,
         "top_n": top_n,
     }

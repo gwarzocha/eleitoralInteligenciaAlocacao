@@ -73,13 +73,14 @@ con = get_connection()
 # ---------------------------------------------------------------------------
 filtros = render_filtros(con)
 
-ano: int           = filtros["ano"]
-uf: str            = filtros["uf"]
-cd_cargo: int      = filtros["cd_cargo"]
-nm_cargo: str      = filtros["nm_cargo"]
-sg_partido: str | None  = filtros["sg_partido"]
+ano: int                 = filtros["ano"]
+uf: str                  = filtros["uf"]
+cd_cargo: int            = filtros["cd_cargo"]
+nm_cargo: str            = filtros["nm_cargo"]
+sg_partido: str | None   = filtros["sg_partido"]
 cd_municipio: int | None = filtros["cd_municipio"]
-top_n: int         = filtros["top_n"]
+nm_municipio: str | None = filtros["nm_municipio"]
+top_n: int               = filtros["top_n"]
 
 # ---------------------------------------------------------------------------
 # Área principal — só renderiza quando UF estiver selecionada
@@ -92,8 +93,8 @@ if not uf:
     st.stop()
 
 # Cabeçalho do contexto selecionado
-partido_label = sg_partido if sg_partido else "Todos os partidos"
-municipio_label = f"Município {cd_municipio}" if cd_municipio else "Todos os municípios"
+partido_label    = sg_partido    if sg_partido    else "Todos os partidos"
+municipio_label  = nm_municipio  if nm_municipio  else "Todos os municípios"
 st.subheader(
     f"Análise: {ano} · {uf} · {nm_cargo} · {partido_label} · {municipio_label}"
 )
@@ -107,7 +108,7 @@ with st.spinner("Consultando DuckDB..."):
         cd_cargo=cd_cargo,
         ano=ano,
         sg_partido=sg_partido,
-        cd_municipio=cd_municipio,
+        nm_municipio=nm_municipio,
         top_n=top_n,
     )
 
