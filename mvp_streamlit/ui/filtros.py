@@ -1,5 +1,5 @@
 """
-ui/filtros.py — Componentes do sidebar para seleção de filtros.
+ui/filtros.py — Sidebar de filtros do MVP Moneyball Eleitoral.
 """
 import streamlit as st
 
@@ -13,32 +13,23 @@ from queries.conexao import listar_ufs, listar_municipios, listar_partidos
 
 def render_filtros(con) -> dict:
     """
-    Renderiza os controles do sidebar e retorna um dicionário com os valores
-    selecionados pelo usuário.
+    Renderiza o sidebar e retorna os filtros selecionados.
 
-    Parameters
-    ----------
-    con : duckdb.DuckDBPyConnection
-        Conexão DuckDB (usada indiretamente via funções de listagem cacheadas).
-
-    Returns
-    -------
-    dict com as chaves:
-        ano          : int   — 2024 ou 2022
-        uf           : str   — sigla da UF selecionada (ou '' se não selecionada)
-        cd_cargo     : int   — código do cargo
-        nm_cargo     : str   — nome legível do cargo
-        sg_partido   : str | None — None = todos os partidos
-        cd_municipio : int | None — None = todos os municípios
-        top_n        : int   — quantidade de candidatos por bairro
+    Retorna dict com:
+        ano          : int
+        uf           : str  ('' se não selecionado)
+        cd_cargo     : int
+        nm_cargo     : str
+        cd_municipio : int | None
+        nm_municipio : str | None   — nome exato do TSE para predicate pushdown
+        parties      : tuple[str]   — tuple vazia = todos os partidos
+        top_n        : int
     """
     with st.sidebar:
-        st.title("Filtros")
+        st.title("⚙️ Filtros")
         st.divider()
 
-        # ------------------------------------------------------------------
-        # Ano
-        # ------------------------------------------------------------------
+        # ── Eleição ────────────────────────────────────────────────────────
         ano: int = st.selectbox(
             label="Eleição",
             options=[2024, 2022],
@@ -49,29 +40,21 @@ def render_filtros(con) -> dict:
 
         st.divider()
 
-        # ------------------------------------------------------------------
-        # UF
-        # ------------------------------------------------------------------
+        # ── UF ─────────────────────────────────────────────────────────────
         ufs_disponiveis = listar_ufs(ano)
-        uf_options = [""] + ufs_disponiveis
-
         uf: str = st.selectbox(
-            label="UF",
-            options=uf_options,
+            label="Estado (UF)",
+            options=[""] + ufs_disponiveis,
             format_func=lambda u: "— Selecione —" if u == "" else u,
             index=0,
             key="sb_uf",
         )
 
-        # ------------------------------------------------------------------
-        # Cargo (dinâmico pelo ano)
-        # ------------------------------------------------------------------
+        # ── Cargo ──────────────────────────────────────────────────────────
         cargos_disponiveis = CARGOS_POR_ANO.get(ano, {})
-        cargo_options = list(cargos_disponiveis.keys())
-
         cd_cargo: int = st.selectbox(
             label="Cargo",
-            options=cargo_options,
+            options=list(cargos_disponiveis.keys()),
             format_func=lambda c: cargos_disponiveis.get(c, str(c)),
             index=0,
             key="sb_cargo",
@@ -80,92 +63,78 @@ def render_filtros(con) -> dict:
 
         st.divider()
 
-        # ------------------------------------------------------------------
-        # Município (opcional — só carrega se UF estiver selecionada)
-        # ------------------------------------------------------------------
+        # ── Município (obrigatório para predicate pushdown) ─────────────────
         cd_municipio: int | None = None
         nm_municipio: str | None = None
 
         if uf:
-            municipios = listar_municipios(uf, ano)
-            # lista de (cd_int, nm_str); índice 0 = "Todos"
-            mun_options = [(None, "Todos os Municípios")] + list(municipios)
+            municipios = listar_municipios(uf, ano)   # list[(cd_int, nm_str)]
+            mun_options = [(None, "— Selecione o município —")] + list(municipios)
 
             mun_idx = st.selectbox(
-                label="Município",
+                label="Município ★",
                 options=range(len(mun_options)),
                 format_func=lambda i: mun_options[i][1],
                 index=0,
                 key="sb_municipio",
+                help="Obrigatório — filtra os dados na raiz da query (predicate pushdown).",
             )
-            cd_municipio = mun_options[mun_idx][0]       # int ou None
-            nm_municipio = mun_options[mun_idx][1] if cd_municipio is not None else None
+            selected = mun_options[mun_idx]
+            if selected[0] is not None:
+                cd_municipio = selected[0]
+                nm_municipio = selected[1]
         else:
             st.selectbox(
-                label="Município",
+                label="Município ★",
                 options=["— Selecione uma UF primeiro —"],
                 disabled=True,
                 key="sb_municipio_disabled",
             )
 
-        # ------------------------------------------------------------------
-        # Partido (opcional — carrega após UF)
-        # ------------------------------------------------------------------
-        sg_partido: str | None = None
+        # ── Partidos (multiselect opcional) ────────────────────────────────
+        parties: tuple[str, ...] = ()
 
-        if uf:
-            partidos = listar_partidos(uf, cd_cargo, ano, cd_municipio)
-            partido_options = [""] + partidos
-
-            partido_sel: str = st.selectbox(
-                label="Partido",
-                options=partido_options,
-                format_func=lambda p: "Todos" if p == "" else p,
-                index=0,
-                key="sb_partido",
+        if uf and cd_municipio is not None:
+            partidos_disponiveis = listar_partidos(uf, cd_cargo, ano, cd_municipio)
+            sel = st.multiselect(
+                label="Partidos (opcional)",
+                options=partidos_disponiveis,
+                default=[],
+                key="ms_partidos",
+                help="Deixe vazio para analisar todos os partidos.",
             )
-            sg_partido = partido_sel if partido_sel != "" else None
+            parties = tuple(sel)
         else:
-            st.selectbox(
-                label="Partido",
-                options=["— Selecione uma UF primeiro —"],
+            st.multiselect(
+                label="Partidos (opcional)",
+                options=[],
                 disabled=True,
-                key="sb_partido_disabled",
+                key="ms_partidos_disabled",
             )
 
         st.divider()
 
-        # ------------------------------------------------------------------
-        # Top N
-        # ------------------------------------------------------------------
+        # ── Top N ──────────────────────────────────────────────────────────
         top_n: int = st.slider(
             label="Top N candidatos por bairro",
             min_value=TOP_N_MIN,
             max_value=TOP_N_MAX,
             value=TOP_N_DEFAULT,
             step=1,
-            help=(
-                "Define quantos candidatos mais votados de cada bairro serão "
-                "analisados. Valores maiores aumentam o escopo mas podem gerar "
-                "mais ruído."
-            ),
+            help="Quantos candidatos mais votados de cada bairro considerar.",
             key="sl_top_n",
         )
 
         st.divider()
-        st.caption(
-            "Moneyball Eleitoral — MVP v1.0\n\n"
-            "Detecta canibalização de votos entre candidatos do mesmo partido "
-            "ou federação em um mesmo bairro."
-        )
+        st.caption("Moneyball Eleitoral — MVP v1.0")
 
     return {
-        "ano": ano,
-        "uf": uf,
-        "cd_cargo": cd_cargo,
-        "nm_cargo": nm_cargo,
-        "sg_partido": sg_partido,
+        "ano":          ano,
+        "uf":           uf,
+        "cd_cargo":     cd_cargo,
+        "nm_cargo":     nm_cargo,
         "cd_municipio": cd_municipio,
         "nm_municipio": nm_municipio,
-        "top_n": top_n,
+        "parties":      parties,
+        "top_n":        top_n,
     }

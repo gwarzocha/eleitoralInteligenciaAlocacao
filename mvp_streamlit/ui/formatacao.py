@@ -60,19 +60,15 @@ def fmt_pct(p: float | None) -> str:
 # Aplicação em massa no DataFrame de resultado
 # ---------------------------------------------------------------------------
 
-# Colunas numéricas inteiras do DataFrame de conflito (aliases em PT)
+# Colunas numéricas do DataFrame (nomes exatos do AS alias da query)
 _COLUNAS_INTEIRAS: list[str] = [
-    "Votos no Bairro",
-    "Total Votos Bairro",
-    "Posição Bairro",
-    "Candidatos Partido/Bairro",
-    "Candidatos Fed./Bairro",
+    "Votos",
+    "candidatos_mesmo_partido",
+    "candidatos_mesma_federacao",
+    "conflito_max",
 ]
 
-# Colunas percentuais
-_COLUNAS_PCT: list[str] = [
-    "% Bairro",
-]
+_COLUNAS_PCT: list[str] = []  # percentual calculado no SQL se necessário
 
 
 def aplicar_formatacao_df(df: pd.DataFrame) -> pd.DataFrame:
